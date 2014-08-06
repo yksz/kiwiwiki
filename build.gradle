@@ -1,13 +1,14 @@
 apply plugin: 'groovy'
 apply plugin: 'war'
 apply plugin: 'jetty'
+apply plugin: 'eclipse'
 
 repositories {
     mavenCentral()
 }
 
 ext {
-    warName = 'executable.war'
+    warName = 'kiwiwiki.war'
 }
 
 configurations {
@@ -15,7 +16,7 @@ configurations {
 }
 
 dependencies {
-    compile 'org.codehaus.groovy:groovy-all:2.2.2'
+    compile 'org.codehaus.groovy:groovy-all:2.3.6'
 
     providedCompile 'org.eclipse.jetty.aggregate:jetty-webapp:8.1.15.v20140411'
     executable 'org.eclipse.jetty.aggregate:jetty-webapp:8.1.15.v20140411'
@@ -46,6 +47,6 @@ task xwar(dependsOn: war) {
     }
 }
 
-jettyRun {
+jettyRunWar {
     httpPort = 8080
 }
