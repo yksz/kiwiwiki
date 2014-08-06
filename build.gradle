@@ -1,0 +1,51 @@
+apply plugin: 'groovy'
+apply plugin: 'war'
+apply plugin: 'jetty'
+
+repositories {
+    mavenCentral()
+}
+
+ext {
+    warName = 'executable.war'
+}
+
+configurations {
+    executable
+}
+
+dependencies {
+    compile 'org.codehaus.groovy:groovy-all:2.2.2'
+
+    providedCompile 'org.eclipse.jetty.aggregate:jetty-webapp:8.1.15.v20140411'
+    executable 'org.eclipse.jetty.aggregate:jetty-webapp:8.1.15.v20140411'
+}
+
+war {
+    archiveName = warName
+    from "$buildDir/classes/main/Main.class"
+    manifest {
+        attributes 'Main-Class': 'Main'
+    }
+}
+
+task xwar(dependsOn: war) {
+    description 'Generates an executable war'
+    def srcFile = file("$libsDir/$warName")
+    def dstFile = file("$buildDir/release/$warName")
+    def extractDir = file("$buildDir/extract")
+    inputs.file srcFile
+    outputs.file dstFile
+    inputs.dir extractDir
+    doLast {
+        for (jar in configurations.executable) {
+            ant.unzip(src: jar, dest: extractDir)
+        }
+        ant.copy(file: srcFile, tofile: dstFile)
+        ant.zip(destfile: dstFile, basedir: extractDir, includes: 'javax/**,org/**', update: true)
+    }
+}
+
+jettyRun {
+    httpPort = 8080
+}
