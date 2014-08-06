@@ -15,4 +15,17 @@
         <url-pattern>/org/*</url-pattern>
     </servlet-mapping>
 
+    <servlet>
+        <servlet-name>huia</servlet-name>
+        <servlet-class>kiwiwiki.framework.web.HuiaServlet</servlet-class>
+        <init-param>
+            <param-name>class</param-name>
+            <param-value>kiwiwiki.WebApplication</param-value>
+        </init-param>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>huia</servlet-name>
+        <url-pattern>/*</url-pattern>
+    </servlet-mapping>
+
 </web-app>
