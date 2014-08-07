@@ -47,6 +47,13 @@ task xwar(dependsOn: war) {
     }
 }
 
-jettyRunWar {
+jettyRun {
     httpPort = 8080
+    stopKey = 'stop'
+    stopPort = 8079
+}
+
+jettyStop {
+    stopKey = 'stop'
+    stopPort = 8079
 }
