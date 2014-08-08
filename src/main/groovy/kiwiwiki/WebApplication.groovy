@@ -4,7 +4,11 @@ import static kiwiwiki.framework.web.Huia.*
 
 class WebApplication {
     void start() {
-        get('/hello') {
+        get('/') {
+            uri 'index.html'
+        }
+
+        get('/hello') { req ->
             'Hello World!'
         }
     }

@@ -22,4 +22,8 @@ class Huia {
     private static def register(method, path, closure) {
         routes << [method: method, path: path, closure: closure]
     }
+
+    static def uri(String path) {
+        "/${path}".toURI()
+    }
 }

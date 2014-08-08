@@ -4,28 +4,28 @@
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd">
 
-    <servlet>
-        <servlet-name>notfound</servlet-name>
-        <servlet-class>NotFoundServlet</servlet-class>
-    </servlet>
-    <servlet-mapping>
-        <servlet-name>notfound</servlet-name>
-        <url-pattern>/Main.class</url-pattern>
-        <url-pattern>/javax/*</url-pattern>
-        <url-pattern>/org/*</url-pattern>
-    </servlet-mapping>
-
-    <servlet>
-        <servlet-name>huia</servlet-name>
-        <servlet-class>kiwiwiki.framework.web.HuiaServlet</servlet-class>
+    <filter>
+        <filter-name>huiaFilter</filter-name>
+        <filter-class>kiwiwiki.framework.web.HuiaFilter</filter-class>
         <init-param>
             <param-name>class</param-name>
             <param-value>kiwiwiki.WebApplication</param-value>
         </init-param>
+    </filter>
+    <filter-mapping>
+        <filter-name>huiaFilter</filter-name>
+        <url-pattern>/*</url-pattern>
+    </filter-mapping>
+
+    <servlet>
+        <servlet-name>notFoundServlet</servlet-name>
+        <servlet-class>NotFoundServlet</servlet-class>
     </servlet>
     <servlet-mapping>
-        <servlet-name>huia</servlet-name>
-        <url-pattern>/*</url-pattern>
+        <servlet-name>notFoundServlet</servlet-name>
+        <url-pattern>/Main.class</url-pattern>
+        <url-pattern>/javax/*</url-pattern>
+        <url-pattern>/org/*</url-pattern>
     </servlet-mapping>
 
 </web-app>
