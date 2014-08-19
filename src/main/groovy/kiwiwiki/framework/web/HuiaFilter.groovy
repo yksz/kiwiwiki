@@ -1,5 +1,8 @@
 package kiwiwiki.framework.web
 
+import java.util.regex.Matcher
+import java.util.regex.Pattern
+
 import javax.servlet.Filter
 import javax.servlet.FilterChain
 import javax.servlet.FilterConfig
@@ -9,22 +12,14 @@ import javax.servlet.ServletResponse
 class HuiaFilter implements Filter {
     private static final CLASS_PARAMETER = 'class'
     private static def initialized = false
-    private static def get = [:], post = [:], put = [:], delete = [:]
 
     void init(FilterConfig conf) {
         synchronized (HuiaFilter.class) {
             if (!initialized) {
-                for (route in getRoutes(conf)) {
-                    HuiaFilter."${route.method}" << [(route.path): route.closure]
-                }
+                runStarter(conf)
                 initialized = true
             }
         }
-    }
-
-    private def getRoutes(conf) {
-        runStarter(conf)
-        Huia.routes
     }
 
     private def runStarter(conf) {
@@ -36,31 +31,40 @@ class HuiaFilter implements Filter {
     }
 
     void doFilter(ServletRequest req, ServletResponse resp, FilterChain chain) {
-        def closure = getClosure(req)
+        def (closure, matcher) = searchSpec(req)
         if (closure) {
-            execute(closure, req, resp)
+            execute(closure, matcher, req, resp)
         } else {
             chain.doFilter(req, resp)
         }
     }
 
-    private def getClosure(req) {
-        def path = req.requestURI - req.contextPath
+    private def searchSpec(req) {
+        def uri = req.requestURI - req.contextPath
         switch (req.method) {
             case 'GET':
-                return get[path]
+                return match(uri, Huia.gets)
             case 'POST':
-                return post[path]
+                return match(uri, Huia.posts)
             case 'PUT':
-                return put[path]
+                return match(uri, Huia.puts)
             case 'DELETE':
-                return delte[path]
+                return match(uri, Huia.deletes)
         }
     }
 
-    private def execute(closure, req, resp) {
+    private def match(uri, methods) {
+        for (method in methods) {
+            Matcher matcher = method.pattern.matcher(uri)
+            if (matcher.matches())
+                return [method.closure, matcher]
+        }
+        return [null, null]
+    }
+
+    private def execute(closure, matcher, req, resp) {
         closure.delegate = resp
-        def result = closure(req)
+        def result = closure(req, matcher)
         switch (result) {
             case String:
             case GString:
