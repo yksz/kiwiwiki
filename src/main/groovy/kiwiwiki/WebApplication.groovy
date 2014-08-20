@@ -4,8 +4,13 @@ import static kiwiwiki.framework.web.Huia.*
 
 class WebApplication {
     void start() {
-        get(~/\//) { req, m ->
+        get('/') {
             uri 'index.html'
+        }
+
+        get('/:name') { req ->
+            def name = req.getAttribute(':name')
+            "Hello ${name}!"
         }
 
         get(~/\/hello\/(?<name>.+)/) { req, m ->

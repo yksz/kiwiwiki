@@ -1,6 +1,5 @@
 package kiwiwiki.framework.web
 
-import java.util.regex.Matcher
 import java.util.regex.Pattern
 
 import javax.servlet.Filter
@@ -31,40 +30,71 @@ class HuiaFilter implements Filter {
     }
 
     void doFilter(ServletRequest req, ServletResponse resp, FilterChain chain) {
-        def (closure, matcher) = searchSpec(req)
-        if (closure) {
+        def (closure, matcher) = findClosure(req)
+        if (closure)
             execute(closure, matcher, req, resp)
-        } else {
+        else
             chain.doFilter(req, resp)
-        }
     }
 
-    private def searchSpec(req) {
-        def uri = req.requestURI - req.contextPath
+    private def findClosure(req) {
         switch (req.method) {
             case 'GET':
-                return match(uri, Huia.gets)
+                return findClosure(req, Huia.gets)
             case 'POST':
-                return match(uri, Huia.posts)
+                return findClosure(req, Huia.posts)
             case 'PUT':
-                return match(uri, Huia.puts)
+                return findClosure(req, Huia.puts)
             case 'DELETE':
-                return match(uri, Huia.deletes)
+                return findClosure(req, Huia.deletes)
         }
     }
 
-    private def match(uri, methods) {
-        for (method in methods) {
-            Matcher matcher = method.pattern.matcher(uri)
-            if (matcher.matches())
-                return [method.closure, matcher]
+    private def findClosure(req, spec) {
+        def uri = req.requestURI - req.contextPath
+        for (route in spec.keySet()) {
+            switch (route) {
+                case String:
+                    if (route == uri || matches(route, uri, req))
+                        return [spec[route], null]
+                    break
+                case Pattern:
+                    def matcher = route.matcher(uri)
+                    if (matcher.matches())
+                        return [spec[route], matcher]
+                    break
+                default:
+                    throw new AssertionError("Not support the type of route: ${route.class.name}")
+            }
         }
         return [null, null]
     }
 
+    // matches: route='/hello/:name', uri='/hello/world'
+    private def matches(route, uri, req) {
+        def routeParts = route.split('/')
+        def uriParts = uri.split('/')
+        if (routeParts.size() != uriParts.size())
+            return false
+        for (i in 1..<routeParts.size()) {
+            if (routeParts[i].charAt(0) == ':')
+                continue
+            if (routeParts[i] != uriParts[i])
+                return false
+        }
+        setParams(req, routeParts, uriParts)
+        return true
+    }
+
+    private def setParams(req, routeParts, uriParts) {
+        for (i in 1..<routeParts.size())
+            if (routeParts[i].charAt(0) == ':')
+                req.setAttribute(routeParts[i], uriParts[i])
+    }
+
     private def execute(closure, matcher, req, resp) {
         closure.delegate = resp
-        def result = closure(req, matcher)
+        def result = (matcher == null) ? closure(req) : closure(req, matcher)
         switch (result) {
             case String:
             case GString:
