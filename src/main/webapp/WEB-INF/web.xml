@@ -5,15 +5,15 @@
     xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd">
 
     <filter>
-        <filter-name>huiaFilter</filter-name>
-        <filter-class>kiwiwiki.framework.web.HuiaFilter</filter-class>
+        <filter-name>kiwiFilter</filter-name>
+        <filter-class>kiwi.framework.KiwiFilter</filter-class>
         <init-param>
             <param-name>class</param-name>
-            <param-value>kiwiwiki.WebApplication</param-value>
+            <param-value>kiwi.wiki.KiwiWiki</param-value>
         </init-param>
     </filter>
     <filter-mapping>
-        <filter-name>huiaFilter</filter-name>
+        <filter-name>kiwiFilter</filter-name>
         <url-pattern>/*</url-pattern>
     </filter-mapping>
 

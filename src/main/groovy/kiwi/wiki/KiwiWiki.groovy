@@ -1,8 +1,8 @@
-package kiwiwiki
+package kiwi.wiki
 
-import static kiwiwiki.framework.web.Huia.*
+import static kiwi.framework.Kiwi.*
 
-class WebApplication {
+class KiwiWiki {
     void start() {
         get('/') {
             uri 'index.html'

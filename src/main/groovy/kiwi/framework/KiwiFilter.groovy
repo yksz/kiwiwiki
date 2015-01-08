@@ -1,4 +1,4 @@
-package kiwiwiki.framework.web
+package kiwi.framework
 
 import java.util.regex.Pattern
 
@@ -8,12 +8,12 @@ import javax.servlet.FilterConfig
 import javax.servlet.ServletRequest
 import javax.servlet.ServletResponse
 
-class HuiaFilter implements Filter {
+class KiwiFilter implements Filter {
     private static final CLASS_PARAMETER = 'class'
     private static def initialized = false
 
     void init(FilterConfig conf) {
-        synchronized (HuiaFilter.class) {
+        synchronized (KiwiFilter.class) {
             if (!initialized) {
                 runStarter(conf)
                 initialized = true
@@ -40,13 +40,13 @@ class HuiaFilter implements Filter {
     private def findClosure(req) {
         switch (req.method) {
             case 'GET':
-                return findClosure(req, Huia.gets)
+                return findClosure(req, Kiwi.gets)
             case 'POST':
-                return findClosure(req, Huia.posts)
+                return findClosure(req, Kiwi.posts)
             case 'PUT':
-                return findClosure(req, Huia.puts)
+                return findClosure(req, Kiwi.puts)
             case 'DELETE':
-                return findClosure(req, Huia.deletes)
+                return findClosure(req, Kiwi.deletes)
         }
     }
 

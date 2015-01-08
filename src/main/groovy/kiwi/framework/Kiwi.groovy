@@ -1,8 +1,8 @@
-package kiwiwiki.framework.web
+package kiwi.framework
 
 import java.util.regex.Pattern
 
-class Huia {
+class Kiwi {
     static Map gets = [:], posts = [:], puts = [:], deletes = [:]
 
     static def get(String path, Closure closure) {
@@ -38,7 +38,7 @@ class Huia {
     }
 
     private static def register(method, route, closure) {
-        Huia["${method}s"] << [(route): closure]
+        Kiwi["${method}s"] << [(route): closure]
     }
 
     static def uri(String path) {
